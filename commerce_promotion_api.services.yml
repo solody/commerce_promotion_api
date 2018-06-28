@@ -1,0 +1,27 @@
+services:
+  commerce_promotion_api.user_coupon_manager:
+    class: Drupal\commerce_promotion_api\UserCouponManager
+    arguments: ['@commerce_promotion.usage']
+  commerce_promotion_api.normalizer.promotion_reference:
+    class: Drupal\commerce_promotion_api\Normalizer\PromotionReferenceNormalizer
+    arguments: ['@entity.repository']
+    tags:
+      - { name: normalizer, priority: 9 }
+  commerce_promotion_api.normalizer.commerce_plugin_item:
+    class: Drupal\commerce_promotion_api\Normalizer\CommercePluginItemNormalizer
+    arguments: ['@entity.repository']
+    tags:
+      - { name: normalizer, priority: 9 }
+  commerce_promotion_api.normalizer.promotion_entity:
+    class: Drupal\commerce_promotion_api\Normalizer\PromotionEntityNormalizer
+    arguments: ['@entity.manager', '@commerce_promotion.usage']
+    tags:
+      - { name: normalizer, priority: 9 }
+  commerce_promotion_api.normalizer.promotion_product_entity:
+    class: Drupal\commerce_promotion_api\Normalizer\PromotionProductEntityNormalizer
+    arguments: ['@entity.manager', '@commerce_promotion_api.product_promotion', '@commerce_promotion.usage']
+    tags:
+      - { name: normalizer, priority: 9 }
+  commerce_promotion_api.product_promotion:
+    class: Drupal\commerce_promotion_api\ProductPromotion
+    arguments: ['@commerce_promotion.usage', '@datetime.time']

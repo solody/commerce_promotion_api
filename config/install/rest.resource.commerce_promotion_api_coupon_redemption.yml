@@ -1,0 +1,21 @@
+langcode: zh-hans
+status: true
+dependencies:
+  module:
+    - basic_auth
+    - commerce_promotion_api
+    - serialization
+    - simple_oauth
+    - user
+id: commerce_promotion_api_coupon_redemption
+plugin_id: commerce_promotion_api_coupon_redemption
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - basic_auth
+    - oauth2
+    - cookie

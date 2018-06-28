@@ -1,0 +1,42 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+POST http://{{host}}/api/rest/commerce-promotion/query-promotions?_format=json
+Content-Type: application/json
+
+{
+  "has_coupon": false,
+  "condition_type": "order_item_product"
+}
+
+###
+
+POST http://{{host}}/api/rest/commerce-promotion/receive-coupon?_format=json
+Content-Type: application/json
+Authorization: Basic {{username}} {{password}}
+
+{
+  "promotion": 1,
+  "user": 4
+}
+
+###
+GET http://{{host}}/api/rest/views/commerce-promotion/coupons/4?_format=json
+Content-Type: application/json
+
+
+###
+
+POST http://{{host}}/api/rest/commerce-promotion/coupon-redemption?_format=json
+Content-Type: application/json
+Authorization: Basic {{username}} {{password}}
+
+{
+  "coupon": 1,
+  "cart": 4
+}
+
+###

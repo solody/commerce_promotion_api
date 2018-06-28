@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ * Contains commerce_promotion_api.module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\user\RoleInterface;
+
+/**
+ * Implements hook_help().
+ */
+function commerce_promotion_api_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the commerce_promotion_api module.
+    case 'help.page.commerce_promotion_api':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides api for commerce promotion module.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function commerce_promotion_api_theme() {
+  return [
+    'commerce_promotion_api' => [
+      'render element' => 'children',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_install().
+ */
+function commerce_promotion_api_install()
+{
+    $permissions = [
+        'restful post commerce_promotion_api_receive_coupon',
+        'restful post commerce_promotion_api_coupon_redemption',
+        'restful post commerce_promotion_api_query_promotions'
+    ];
+    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, $permissions);
+    $permissions = [
+        'restful post commerce_promotion_api_query_promotions'
+    ];
+    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, $permissions);
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function commerce_promotion_api_entity_base_field_info(EntityTypeInterface $entity_type) {
+    $fields = [];
+
+    if ($entity_type->id() == 'commerce_promotion_coupon') {
+
+        $fields['user_id'] = BaseFieldDefinition::create('entity_reference')
+            ->setLabel(t('领取用户'))
+            ->setSetting('target_type', 'user')
+            ->setSetting('handler', 'default')
+            ->setDisplayOptions('view', [
+                'label' => 'inline',
+                'type' => 'entity_reference_label'
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'entity_reference_autocomplete'
+            ])
+            ->setDisplayConfigurable('view', true)
+            ->setDisplayConfigurable('form', true);
+    }
+
+    if ($entity_type->id() == 'commerce_promotion') {
+
+        $fields['image'] = BaseFieldDefinition::create('image')
+            ->setLabel(t('图片'))
+            ->setCardinality(1)
+            ->setSettings([
+                'file_directory' => 'commerce_promotion/promotion/image/[date:custom:Y]-[date:custom:m]',
+                'file_extensions' => 'png gif jpg jpeg',
+                'max_filesize' => '200 KB',
+                'max_resolution' => '',
+                'min_resolution' => '',
+                'alt_field' => false,
+                'alt_field_required' => true,
+                'title_field' => false,
+                'title_field_required' => false,
+                'handler' => 'default:file',
+                'handler_settings' => []
+            ])
+            ->setDisplayOptions('view', [
+                'label' => 'above',
+                'type' => 'image'
+            ])
+            ->setDisplayOptions('form', [
+                'type' => 'image_image'
+            ]);
+    }
+
+    return $fields;
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function commerce_promotion_api_entity_base_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type)
+{
+    // Alter the mymodule_text field to use a custom class.
+    if ($entity_type->id() == 'commerce_promotion' && !empty($fields['start_date']) && !empty($fields['end_date'])) {
+        $fields['start_date']->setSetting('datetime_type', 'datetime');
+        $fields['end_date']->setSetting('datetime_type', 'datetime')
+            ->setDisplayOptions('form', [
+                'type' => 'commerce_promotion_api_end_datetime'
+            ]);
+    }
+}
